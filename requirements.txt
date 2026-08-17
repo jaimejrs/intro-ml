@@ -1,0 +1,9 @@
+# Dependencias do notebook introdutorio de Machine Learning
+# Dataset: Online Shoppers Purchasing Intention
+
+numpy
+pandas
+matplotlib
+scikit-learn
+jupyterlab
+ipykernel

@@ -1,0 +1,2299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Introdução a Machine Learning com Python</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+    content="Aula introdutória de Machine Learning com Google Colab, Pandas, Scikit-Learn e o dataset Online Shoppers Intention.">
+  <style>
+    @font-face {
+      font-family: 'Open Sans';
+      font-style: normal;
+      font-weight: 400 800;
+      font-stretch: 100%;
+      font-display: swap;
+      src: url('../assets/fonts/open-sans-latin.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD
+    }
+
+    @font-face {
+      font-family: 'Open Sans';
+      font-style: normal;
+      font-weight: 400 800;
+      font-stretch: 100%;
+      font-display: swap;
+      src: url('../assets/fonts/open-sans-latin-ext.woff2') format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF
+    }
+
+    :root {
+      --magenta: #5030c0;
+      --dark: #061226;
+      --teal: #00c8d8;
+      --orange: #f5b84f;
+      --green: #1fae8a;
+      --rose: #e8e4ff;
+      --blue: #0c4890;
+      --blue-soft: #d8ecff;
+      --ink: #142033;
+      --paper: #fbfdff;
+      --soft: #f3f8fc;
+      --line: #c8d8e8
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--dark);
+      font-family: 'Open Sans', 'Segoe UI', Arial, Helvetica, sans-serif;
+      color: var(--ink)
+    }
+
+    .deck {
+      --scale: 1;
+      counter-reset: slide;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      padding: 40px 0 120px
+    }
+
+    .slide {
+      width: 1280px;
+      height: 720px;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: var(--paper);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .35);
+      zoom: var(--scale);
+      counter-increment: slide
+    }
+
+    .slide::after {
+      content: counter(slide);
+      position: absolute;
+      right: 22px;
+      bottom: 14px;
+      color: #6c86a8;
+      font-size: 12px;
+      letter-spacing: .5px
+    }
+
+    .slide.no-num::after {
+      display: none
+    }
+
+    .pad {
+      height: 100%;
+      padding: 56px 68px
+    }
+
+    .vcenter {
+      display: flex;
+      flex-direction: column;
+      justify-content: center
+    }
+
+    .cover img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .cover::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(0, 0, 0, .72), rgba(0, 0, 0, .18))
+    }
+
+    .cover .cover-text {
+      position: absolute;
+      left: 70px;
+      top: 330px;
+      max-width: 870px;
+      color: var(--paper);
+      text-shadow: 0 3px 14px rgba(0, 0, 0, .45)
+    }
+
+    .cover h1 {
+      margin: 0 0 10px;
+      font-size: 46px;
+      line-height: 1.12;
+      font-weight: 800
+    }
+
+    .cover p {
+      margin: 0;
+      font-size: 23px;
+      font-weight: 700
+    }
+
+    .cover .cover-professor {
+      margin-top: 18px;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: .2px
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--magenta);
+      color: var(--paper);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase
+    }
+
+    .identity {
+      background: var(--soft)
+    }
+
+    .identity .panel {
+      width: 800px;
+      border-left: 16px solid var(--magenta);
+      padding-left: 32px
+    }
+
+    .identity h1 {
+      margin: 0 0 18px;
+      font-size: 45px;
+      line-height: 1.12;
+      font-weight: 800
+    }
+
+    .identity h2 {
+      margin: 10px 0;
+      color: #2f4968;
+      font-size: 24px;
+      font-weight: 700
+    }
+
+    h1.title {
+      margin: 0;
+      color: var(--dark);
+      font-size: 36px;
+      font-weight: 800;
+      line-height: 1.18
+    }
+
+    h1.rule {
+      position: relative;
+      margin-bottom: 24px;
+      padding-bottom: 22px
+    }
+
+    h1.rule::after {
+      content: "";
+      position: absolute;
+      left: 2px;
+      bottom: 2px;
+      width: 1140px;
+      height: 10px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10' preserveAspectRatio='none'%3E%3Cpath d='M0 6 C 6 2, 12 2, 18 6 S 30 10, 36 6 S 48 2, 54 6 S 66 10, 72 6 S 84 2, 90 6 S 102 10, 108 6 S 120 2, 120 6' fill='none' stroke='%23f5b84f' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: repeat-x;
+      background-size: 120px 10px
+    }
+
+    .guiding-question,
+    .colab-open {
+      background: var(--soft)
+    }
+
+    .guiding-question::before,
+    .colab-open::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 18px;
+      height: 100%;
+      background: var(--magenta)
+    }
+
+    .guiding-question::after,
+    .colab-open::after {
+      content: "";
+      position: absolute;
+      left: 42px;
+      right: 0;
+      bottom: 0;
+      height: 12px;
+      background: var(--teal)
+    }
+
+    .guiding-question .pad,
+    .colab-open .pad {
+      position: relative
+    }
+
+    .guiding-question .pad {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 92px 122px
+    }
+
+    .guiding-question h1 {
+      max-width: 1020px;
+      margin: 0;
+      color: var(--dark);
+      font-size: 59px;
+      font-weight: 800;
+      line-height: 1.12
+    }
+
+    .guiding-question h1::after,
+    .colab-open h1::after {
+      content: "";
+      display: block;
+      height: 10px;
+      margin-top: 28px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10' preserveAspectRatio='none'%3E%3Cpath d='M0 6 C 6 2, 12 2, 18 6 S 30 10, 36 6 S 48 2, 54 6 S 66 10, 72 6 S 84 2, 90 6 S 102 10, 108 6 S 120 2, 120 6' fill='none' stroke='%23f5b84f' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: repeat-x;
+      background-size: 120px 10px
+    }
+
+    .guiding-question h1::after {
+      width: 640px;
+      margin-left: auto;
+      margin-right: auto
+    }
+
+    .colab-open .pad {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      text-align: center;
+      padding: 74px 110px 64px
+    }
+
+    .colab-open img {
+      width: 720px;
+      max-width: 100%;
+      max-height: 370px;
+      object-fit: contain;
+      filter: drop-shadow(0 12px 18px rgba(6, 18, 38, .14))
+    }
+
+    .colab-open h1 {
+      max-width: 1040px;
+      margin: 0;
+      color: var(--dark);
+      font-size: 52px;
+      font-weight: 800;
+      line-height: 1.12
+    }
+
+    .colab-open h1::after {
+      width: 520px;
+      margin-left: auto;
+      margin-right: auto
+    }
+
+    .step-tag {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      background: var(--magenta);
+      color: var(--paper);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase
+    }
+
+    .slide-thesis {
+      max-width: 1040px;
+      margin: 0 0 24px;
+      color: #36516f;
+      font-size: 23px;
+      line-height: 1.45
+    }
+
+    .note {
+      margin-top: 22px;
+      padding: 18px 22px;
+      border-left: 8px solid var(--magenta);
+      background: var(--rose);
+      color: #2f2760;
+      font-size: 19px;
+      line-height: 1.45
+    }
+
+    .note.ok {
+      border-left-color: var(--green);
+      background: #dff7ef;
+      color: #0e513f
+    }
+
+    .note.warn {
+      border-left-color: var(--orange);
+      background: var(--paper)3d8;
+      color: #60400d
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 34px;
+      align-items: start
+    }
+
+    .wide-col {
+      display: grid;
+      grid-template-columns: 1.12fr .88fr;
+      gap: 34px;
+      align-items: start
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px
+    }
+
+    .four-col {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px
+    }
+
+    .card {
+      min-height: 150px;
+      border: 1px solid #c8d8e8;
+      border-top: 8px solid var(--teal);
+      border-radius: 8px;
+      background: var(--paper);
+      padding: 20px 22px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, .07)
+    }
+
+    .card.magenta {
+      border-top-color: var(--magenta)
+    }
+
+    .card.orange {
+      border-top-color: var(--orange)
+    }
+
+    .card.green {
+      border-top-color: var(--green)
+    }
+
+    .card.blue {
+      border-top-color: var(--blue)
+    }
+
+    .card.flat {
+      min-height: 0
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      color: var(--dark);
+      font-size: 21px;
+      line-height: 1.2;
+      font-weight: 800
+    }
+
+    .card p,
+    .card li {
+      margin: 0;
+      color: #36516f;
+      font-size: 17px;
+      line-height: 1.45
+    }
+
+    .card ul {
+      margin: 0;
+      padding-left: 20px
+    }
+    #s4b .pad {
+      padding-top: 40px;
+      padding-bottom: 34px
+    }
+
+    #s4b h1.rule {
+      margin-bottom: 16px;
+      padding-bottom: 18px
+    }
+
+    #s4b .slide-thesis {
+      margin-bottom: 14px;
+      font-size: 21px;
+      line-height: 1.34
+    }
+
+    .bigdata-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      align-items: stretch;
+      min-height: 348px
+    }
+
+    .bigdata-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px
+    }
+
+    #s4b .card {
+      min-height: 0;
+      padding: 16px 17px
+    }
+
+    #s4b .card h3 {
+      margin-bottom: 8px;
+      font-size: 19px
+    }
+
+    #s4b .card p {
+      font-size: 15px;
+      line-height: 1.34
+    }
+
+    .bigdata-visual {
+      position: relative;
+      min-height: 348px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--dark);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, .10)
+    }
+
+    .bigdata-visual img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: saturate(1.06) contrast(1.03)
+    }
+    .algo-slide .slide-thesis {
+      max-width: 1080px;
+      margin-bottom: 18px;
+      font-size: 21px;
+      line-height: 1.36
+    }
+
+    .algo-slide .card {
+      min-height: 132px;
+      padding: 17px 18px
+    }
+
+    .algo-slide .card h3 {
+      font-size: 20px
+    }
+
+    .algo-slide .card p,
+    .algo-slide .card li {
+      font-size: 16px;
+      line-height: 1.38
+    }
+
+    .algo-slide .matrix {
+      margin-top: 16px;
+      font-size: 16px
+    }
+
+    .algo-slide .matrix td {
+      padding: 9px 12px
+    }
+
+    
+    .algo-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 330px;
+      gap: 22px;
+      align-items: stretch
+    }
+
+    .algo-slide .algo-copy .three-col {
+      grid-template-columns: 1fr;
+      gap: 10px
+    }
+
+    .algo-slide .algo-copy .card {
+      min-height: 0;
+      padding: 13px 16px
+    }
+
+    .algo-slide .algo-copy .card h3 {
+      margin-bottom: 6px;
+      font-size: 18px
+    }
+
+    .algo-slide .algo-copy .card p,
+    .algo-slide .algo-copy .card li {
+      font-size: 14.5px;
+      line-height: 1.32
+    }
+
+    .algo-slide .algo-copy .matrix {
+      margin-top: 12px;
+      font-size: 14.2px
+    }
+
+    .algo-slide .algo-copy .matrix th,
+    .algo-slide .algo-copy .matrix td {
+      padding: 7px 9px
+    }
+
+    .algo-visual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 376px;
+      margin: 0;
+      padding: 14px;
+      overflow: hidden;
+      border: 1px solid #c8d8e8;
+      border-radius: 8px;
+      background: #f7fbff;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, .08)
+    }
+
+    .algo-visual img {
+      display: block;
+      max-width: 100%;
+      max-height: 348px;
+      object-fit: contain;
+      cursor: zoom-in
+    }
+
+    .algo-visual img:focus {
+      outline: 3px solid var(--orange);
+      outline-offset: 5px
+    }
+
+    .image-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 42px;
+      background: rgba(2, 10, 24, .88)
+    }
+
+    .image-lightbox.open {
+      display: flex
+    }
+
+    .image-lightbox img {
+      display: block;
+      max-width: min(1120px, 92vw);
+      max-height: 84vh;
+      object-fit: contain;
+      border: 1px solid rgba(255, 255, 255, .28);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, .38)
+    }
+
+    .image-lightbox button {
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255, 255, 255, .38);
+      border-radius: 8px;
+      background: rgba(251, 253, 255, .96);
+      color: var(--dark);
+      cursor: pointer;
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 800
+    }
+
+    .image-lightbox button:focus {
+      outline: 3px solid var(--orange);
+      outline-offset: 3px
+    }
+
+    body.lightbox-open {
+      overflow: hidden
+    }
+
+    .mini {
+      font-size: 14px;
+      color: #5d7595
+    }
+
+    .big-number {
+      color: var(--magenta);
+      font-size: 58px;
+      line-height: 1;
+      font-weight: 800
+    }
+
+    .matrix {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+      font-size: 17px
+    }
+
+    .matrix th {
+      background: var(--blue);
+      color: var(--paper);
+      text-align: left;
+      padding: 11px 14px;
+      font-weight: 800
+    }
+
+    .matrix td {
+      border: 1px solid #bcd3ea;
+      padding: 10px 13px;
+      line-height: 1.35;
+      vertical-align: top
+    }
+
+    .matrix tr:nth-child(even) td {
+      background: #edf7ff
+    }
+
+    .matrix td.t {
+      white-space: nowrap;
+      font-weight: 800;
+      color: var(--magenta)
+    }
+
+    .matrix.dataset-dict {
+      margin-top: 14px;
+      font-size: 15px
+    }
+
+    .matrix.dataset-dict th {
+      padding: 9px 12px
+    }
+
+    .matrix.dataset-dict td {
+      padding: 8px 12px;
+      line-height: 1.28
+    }
+
+    .matrix.dataset-dict code {
+      font-size: .86em
+    }
+
+    code {
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: rgba(0, 0, 0, .06);
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: .92em
+    }
+
+    .code-title {
+      margin: 0 0 10px;
+      color: #5a7190;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase
+    }
+
+    .code-wrap {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #061226;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, .16)
+    }
+
+    .code-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 14px;
+      background: #0a1d3a;
+      color: #dff7ff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase
+    }
+
+    .code-bar button {
+      border: 0;
+      border-radius: 4px;
+      padding: 5px 10px;
+      background: var(--magenta);
+      color: var(--paper);
+      cursor: pointer;
+      font: inherit
+    }
+
+    .code-block {
+      display: block;
+      max-height: 470px;
+      margin: 0;
+      padding: 16px 20px 18px;
+      overflow: auto;
+      color: #eef9ff;
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: 16px;
+      line-height: 1.4;
+      white-space: pre;
+      tab-size: 2
+    }
+
+    .kw {
+      color: #50f0f0;
+      font-weight: 800
+    }
+
+    .str {
+      color: #f5b84f
+    }
+
+    .cmt {
+      color: #75e7bf
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 4px;
+      background: #e3f2ff;
+      color: #163a5a;
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: 14px;
+      font-weight: 800
+    }
+
+    .tag.good {
+      background: #dff7ef;
+      color: #0e513f
+    }
+
+    .tag.hot {
+      background: var(--paper)3d8;
+      color: #6b4300
+    }
+
+    .tag.pink {
+      background: #e8e4ff;
+      color: #342780
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0;
+      align-items: stretch;
+      margin-top: 18px
+    }
+
+    .flow .node {
+      position: relative;
+      padding: 18px 18px 16px;
+      border: 1px solid var(--line);
+      border-left: 7px solid var(--teal);
+      background: var(--paper)
+    }
+
+    .flow .node+.node {
+      margin-left: 16px
+    }
+
+    .flow .node+.node::before {
+      content: "";
+      position: absolute;
+      left: -16px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-top: 9px solid transparent;
+      border-bottom: 9px solid transparent;
+      border-left: 11px solid #a7c0da
+    }
+
+    .flow .node h4 {
+      margin: 0 0 6px;
+      font-size: 17px
+    }
+
+    .flow .node p {
+      margin: 0;
+      color: #36516f;
+      font-size: 14.5px;
+      line-height: 1.35
+    }
+
+    .pipeline {
+      position: relative;
+      height: 355px;
+      border-radius: 8px;
+      background: radial-gradient(#cfe1f2 1.1px, transparent 1.1px) 0 0/22px 22px, #f7fbff;
+      border: 1px solid #c8d8e8
+    }
+
+    .pipe-box {
+      position: absolute;
+      width: 170px;
+      padding: 13px 14px;
+      border: 1.5px solid #8db5d8;
+      border-radius: 7px;
+      background: var(--paper);
+      box-shadow: 0 2px 7px rgba(31, 45, 61, .14);
+      text-align: center
+    }
+
+    .pipe-box::before {
+      content: "";
+      position: absolute;
+      left: -1.5px;
+      right: -1.5px;
+      top: -1.5px;
+      height: 6px;
+      border-radius: 7px 7px 0 0;
+      background: var(--teal)
+    }
+
+    .pipe-box.green::before {
+      background: var(--green)
+    }
+
+    .pipe-box.orange::before {
+      background: var(--orange)
+    }
+
+    .pipe-box.magenta::before {
+      background: var(--magenta)
+    }
+
+    .pipe-box h5 {
+      margin: 4px 0 3px;
+      font-size: 15px
+    }
+
+    .pipe-box em {
+      display: block;
+      color: #5b7592;
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: 12px;
+      font-style: normal
+    }
+
+    .pipeline svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none
+    }
+
+    .wire {
+      fill: none;
+      stroke: #6b92b3;
+      stroke-width: 2.2
+    }
+
+    .wire.dash {
+      stroke-dasharray: 6 4;
+      stroke: #5030c0
+    }
+
+
+    .ai-hierarchy {
+      display: grid;
+      grid-template-columns: 500px 1fr;
+      gap: 28px;
+      align-items: center;
+      margin-top: 0
+    }
+
+    .ai-hierarchy svg {
+      display: block;
+      width: 500px;
+      height: 330px
+    }
+
+    .ai-hierarchy .ring-ai {
+      fill: rgba(12, 72, 144, .16);
+      stroke: var(--blue);
+      stroke-width: 5
+    }
+
+    .ai-hierarchy .ring-ml {
+      fill: rgba(31, 174, 138, .18);
+      stroke: var(--green);
+      stroke-width: 5
+    }
+
+    .ai-hierarchy .ring-dl {
+      fill: rgba(80, 48, 192, .18);
+      stroke: var(--magenta);
+      stroke-width: 5
+    }
+
+    .ai-hierarchy .ring-llm {
+      fill: rgba(245, 184, 79, .28);
+      stroke: var(--orange);
+      stroke-width: 5
+    }
+
+    .ai-hierarchy text {
+      fill: var(--dark);
+      font-family: 'Open Sans', sans-serif;
+      font-weight: 800;
+      text-anchor: middle
+    }
+
+    .ai-hierarchy .label-ai { font-size: 29px; }
+    .ai-hierarchy .label-ml { font-size: 22px; }
+    .ai-hierarchy .label-dl { font-size: 19px; }
+    .ai-hierarchy .label-llm { font-size: 17px; }
+
+    #s4d .pad {
+      padding-top: 42px;
+      padding-bottom: 42px
+    }
+
+    #s4d h1.rule {
+      margin-bottom: 18px;
+      padding-bottom: 18px
+    }
+
+    #s4d .slide-thesis {
+      margin-bottom: 14px;
+      font-size: 21px;
+      line-height: 1.35
+    }
+
+    .ai-legend {
+      display: grid;
+      gap: 10px
+    }
+
+    .ai-legend .card {
+      min-height: 0;
+      padding: 13px 16px
+    }
+
+    .ai-legend .card p {
+      font-size: 14.5px;
+      line-height: 1.35
+    }
+    .company-slide .pad {
+      padding-top: 42px;
+      padding-bottom: 42px
+    }
+
+    .company-slide h1.rule {
+      margin-bottom: 18px;
+      padding-bottom: 18px
+    }
+
+    .company-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 13px 18px
+    }
+
+    .company-grid .card {
+      min-height: 0;
+      padding: 14px 16px;
+      border-top-width: 6px
+    }
+    .company-grid .brand-netflix { border-top-color: #e50914 }
+    .company-grid .brand-amazon { border-top-color: #ff9900 }
+    .company-grid .brand-uber { border-top-color: #000000 }
+    .company-grid .brand-spotify { border-top-color: #1db954 }
+    .company-grid .brand-alphago { border-top-color: #2090d0 }
+
+    .company-brand {
+      display: flex;
+      align-items: center;
+      min-height: 42px;
+      margin-bottom: 8px
+    }
+
+    .company-logo {
+      display: block;
+      width: auto;
+      max-width: 142px;
+      max-height: 38px;
+      object-fit: contain
+    }
+
+    .company-logo.tall {
+      max-height: 42px
+    }
+
+    .company-logo.wide {
+      max-width: 178px
+    }
+
+    .company-grid .card p {
+      font-size: 14px;
+      line-height: 1.32
+    }
+
+    .company-grid .wide {
+      grid-column: 1 / -1
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px
+    }
+
+    .stat {
+      padding: 20px 22px;
+      border-left: 8px solid var(--magenta);
+      background: #f3f8fc
+    }
+
+    .stat h3 {
+      margin: 0 0 8px;
+      font-size: 38px;
+      line-height: 1;
+      color: var(--magenta)
+    }
+
+    .stat p {
+      margin: 0;
+      font-size: 17px;
+      color: #36516f;
+      line-height: 1.4
+    }
+
+    .closing {
+      background:
+        linear-gradient(90deg, rgba(80, 48, 192, .22) 1px, transparent 1px) 0 0 / 96px 96px,
+        linear-gradient(0deg, rgba(0, 200, 216, .16) 1px, transparent 1px) 0 0 / 96px 96px,
+        linear-gradient(135deg, #061226 0%, #001040 48%, #0c4890 100%);
+      color: var(--paper)
+    }
+
+    .closing::before {
+      content: "";
+      position: absolute;
+      left: -40px;
+      bottom: 0;
+      width: 560px;
+      height: 280px;
+      transform: rotate(-14deg);
+      transform-origin: left bottom;
+      background: linear-gradient(90deg, rgba(0, 200, 216, .12), rgba(80, 48, 192, .34));
+      border-top: 2px solid rgba(80, 240, 240, .55)
+    }
+
+    .closing::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 330px;
+      height: 720px;
+      transform: skewX(-10deg);
+      transform-origin: right center;
+      background: linear-gradient(180deg, rgba(245, 184, 79, .78), rgba(80, 48, 192, .26));
+      border-left: 2px solid rgba(251, 253, 255, .4)
+    }
+
+    .closing .thanks {
+      position: absolute;
+      left: 68px;
+      bottom: 78px;
+      z-index: 3;
+      margin: 0;
+      color: var(--paper);
+      font-size: 86px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-shadow: 0 8px 28px rgba(0, 0, 0, .36)
+    }
+
+    .closing .thanks::after {
+      content: "";
+      display: block;
+      width: 360px;
+      height: 9px;
+      margin-top: 22px;
+      background: linear-gradient(90deg, var(--teal), var(--magenta), var(--orange));
+      border-radius: 999px
+    }
+
+    .closing-chart {
+      position: absolute;
+      left: 690px;
+      top: 170px;
+      z-index: 2;
+      width: 430px;
+      height: 260px;
+      overflow: visible
+    }
+
+    .closing-chart .axis {
+      stroke: rgba(251, 253, 255, .35);
+      stroke-width: 2
+    }
+
+    .closing-chart .series-a {
+      fill: none;
+      stroke: var(--teal);
+      stroke-width: 7;
+      stroke-linecap: round;
+      stroke-linejoin: round
+    }
+
+    .closing-chart .series-b {
+      fill: none;
+      stroke: var(--orange);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-dasharray: 9 11
+    }
+
+    .closing-chart rect {
+      fill: var(--paper);
+      stroke: var(--magenta);
+      stroke-width: 5
+    }
+
+    .closing-bars {
+      position: absolute;
+      left: 80px;
+      top: 96px;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(7, 24px);
+      align-items: end;
+      gap: 14px;
+      height: 170px
+    }
+
+    .closing-bars span {
+      display: block;
+      width: 24px;
+      border-radius: 4px 4px 0 0;
+      background: linear-gradient(180deg, var(--teal), var(--blue));
+      box-shadow: 0 0 18px rgba(80, 240, 240, .18)
+    }
+
+    .closing-bars span:nth-child(2n) {
+      background: linear-gradient(180deg, var(--orange), var(--magenta))
+    }
+
+    .navbar {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: rgba(20, 20, 20, .92);
+      color: var(--paper);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .35)
+    }
+
+    .navbar button,
+    .navbar a {
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, .12);
+      color: var(--paper);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer
+    }
+
+    .navbar .count {
+      min-width: 72px;
+      text-align: center;
+      color: #dff7ff;
+      font-size: 13px;
+      font-weight: 800
+    }
+
+    .toc {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 30;
+      display: none;
+      width: 340px;
+      max-height: calc(100vh - 110px);
+      overflow: auto;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .98);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .28)
+    }
+
+    body.show-toc .toc {
+      display: block
+    }
+
+    .toc h5 {
+      margin: 10px 8px 6px;
+      color: var(--magenta);
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase
+    }
+
+    .toc a {
+      display: flex;
+      gap: 8px;
+      padding: 7px 8px;
+      border-radius: 5px;
+      color: #142033;
+      font-size: 13px;
+      line-height: 1.25;
+      text-decoration: none
+    }
+
+    .toc a:hover {
+      background: #eaf4ff
+    }
+
+    .toc .n {
+      width: 24px;
+      color: #6c86a8;
+      font-weight: 800;
+      flex: 0 0 auto
+    }
+
+    body.solo {
+      overflow: hidden;
+      background: var(--paper)
+    }
+
+    body.solo .navbar {
+      display: none
+    }
+
+    body.solo .deck {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      padding: 0
+    }
+
+    body.solo .slide {
+      visibility: hidden;
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      margin: 0;
+      zoom: 1;
+      transform: translate(-50%, -50%) scale(var(--solo-scale-x, 1), var(--solo-scale-y, 1));
+      transform-origin: center center
+    }
+
+    body.solo .slide.active {
+      visibility: visible
+    }
+
+    @media print {
+      body {
+        background: var(--paper)
+      }
+
+      .navbar,
+      .toc {
+        display: none !important
+      }
+
+      .deck {
+        display: block;
+        padding: 0
+      }
+
+      .slide {
+        page-break-after: always;
+        box-shadow: none;
+        zoom: 1;
+        transform: none;
+        margin: 0
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="navbar" aria-label="Navegação da apresentação">
+    <button type="button" id="prevBtn">Anterior</button>
+    <span class="count" id="slideCount">1 / 31</span>
+    <button type="button" id="nextBtn">Próximo</button>
+    <button type="button" id="tocBtn">Sumário</button>
+    <button type="button" id="soloBtn">Apresentar</button>
+  </div>
+
+        <nav class="toc" id="toc" aria-label="Sumário da aula">
+    <h5>Sumário</h5>
+    <a href="#s1"><span class="n">1</span> Capa</a>
+    <a href="#s2"><span class="n">2</span> Objetivos da aula</a>
+    <a href="#s4a"><span class="n">3</span> Por que Python</a>
+    <a href="#s4b"><span class="n">4</span> Big Data</a>
+    <a href="#s4d"><span class="n">5</span> Inteligência Artificial</a>
+    <a href="#s4e"><span class="n">6</span> Como empresas usam ML</a>
+    <a href="#s5"><span class="n">7</span> Algoritmo e modelo</a>
+    <a href="#s6"><span class="n">8</span> Paradigmas de ML</a>
+    <a href="#s6a"><span class="n">9</span> Aprendizado supervisionado</a>
+    <a href="#s6c"><span class="n">10</span> Árvore de Decisão</a>
+    <a href="#s6d"><span class="n">11</span> Random Forest Classifier</a>
+    <a href="#s6e"><span class="n">12</span> KNN</a>
+    <a href="#s6f"><span class="n">13</span> SVM</a>
+    <a href="#s6n"><span class="n">14</span> Regressão Logística</a>
+    <a href="#s6o"><span class="n">15</span> Naive Bayes</a>
+    <a href="#s6g"><span class="n">16</span> Regressão Linear</a>
+    <a href="#s6h"><span class="n">17</span> Random Forest Regressor</a>
+    <a href="#s6p"><span class="n">18</span> XGBoost</a>
+    <a href="#s6b"><span class="n">19</span> Não supervisionado e reforço</a>
+    <a href="#s6j"><span class="n">20</span> Clusterização Hierárquica</a>
+    <a href="#s6k"><span class="n">21</span> DBSCAN</a>
+    <a href="#s6l"><span class="n">22</span> PCA</a>
+    <a href="#s6m"><span class="n">23</span> Isolation Forest</a>
+    <a href="#s6q"><span class="n">24</span> Apriori</a>
+    <a href="#s9"><span class="n">25</span> Dataset</a>
+    <a href="#s9a"><span class="n">26</span> Colunas: navegação</a>
+    <a href="#s9b"><span class="n">27</span> Colunas: comportamento</a>
+    <a href="#s9c"><span class="n">28</span> Colunas: contexto e alvo</a>
+    <a href="#s4"><span class="n">29</span> Pergunta norteadora</a>
+    <a href="#s8"><span class="n">30</span> Abrir Google Colab</a>
+    <a href="#s26"><span class="n">31</span> Encerramento</a>
+  </nav>
+
+  <main class="deck">
+    <section class="slide no-num cover" id="s1">
+      <img src="../assets/img/fundo-analise-dados.png" alt="">
+      <div class="cover-text">
+        <span class="eyebrow">Introdução a Machine Learning</span>
+        <h1>Preveja o futuro com Python</h1>
+        <p>Uma introdução prática ao treinamento de modelos de machine learning.</p>
+        <p class="cover-professor">Professor: Jaime Teixeira - @jaimejrs</p>
+      </div>
+    </section>
+
+    <section class="slide no-num identity" id="s2">
+      <div class="pad vcenter">
+        <div class="panel">
+          <span class="step-tag">Objetivo</span>
+          <h1>Transformar dados de navegação em um primeiro modelo de ML</h1>
+          <h2>Ambiente: Google Colab</h2>
+          <h2>Dataset: Online Shoppers Intention</h2>
+          <h2>Bibliotecas: Pandas e Scikit-Learn</h2>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="slide" id="s4a">
+      <div class="pad">
+        <span class="step-tag">Teoria</span>
+        <h1 class="title rule">Por que Python virou padrão na área de dados?</h1>
+        <p class="slide-thesis">O Insight Lab/UFC destaca Python como uma linguagem flexível, aberta, fácil de aprender e apoiada por bibliotecas fortes para análise, visualização e Machine Learning.</p>
+        <div class="four-col">
+          <div class="card blue">
+            <h3>Fácil de usar</h3>
+            <p>A sintaxe reduz a barreira de entrada e ajuda iniciantes a focar no raciocínio, não só na linguagem.</p>
+          </div>
+          <div class="card green">
+            <h3>Código aberto</h3>
+            <p>A comunidade cria, compartilha e melhora ferramentas que aceleram projetos de dados.</p>
+          </div>
+          <div class="card orange">
+            <h3>Bibliotecas</h3>
+            <p>Pandas, Matplotlib, Seaborn e Scikit-Learn cobrem da tabela ao primeiro modelo.</p>
+          </div>
+          <div class="card magenta">
+            <h3>Integração</h3>
+            <p>Python se conecta bem a ambientes existentes e funciona em diferentes etapas da Ciência de Dados.</p>
+          </div>
+        </div>
+        <div class="note ok">Esse ecossistema permite cobrir várias etapas do trabalho com dados: preparação, exploração, visualização, modelagem e comunicação de resultados.</div>
+        <p class="mini">Base: <a href="https://www.insightlab.ufc.br/por-que-o-python-e-a-linguagem-mais-adotada-na-area-de-data-science/" target="_blank" rel="noopener">Insight Lab/UFC</a>, "Por que o Python é a Linguagem mais adotada na área de Data Science?"</p>
+      </div>
+    </section>
+
+    <section class="slide" id="s4b">
+      <div class="pad">
+        <span class="step-tag">Teoria</span>
+        <h1 class="title rule">Big Data: quando escala vira o problema</h1>
+        <p class="slide-thesis">Big Data não é um modelo. É o conjunto de práticas e tecnologias para lidar com dados grandes, rápidos, variados e difíceis de processar em ferramentas comuns.</p>
+        <div class="bigdata-layout">
+          <div class="bigdata-cards">
+            <div class="card blue">
+              <h3>Volume</h3>
+              <p>Muitos dados: logs, transações, sensores, documentos, imagens e arquivos acumulados.</p>
+            </div>
+            <div class="card orange">
+              <h3>Velocidade</h3>
+              <p>Dados chegando continuamente, muitas vezes perto do tempo real.</p>
+            </div>
+            <div class="card green">
+              <h3>Variedade</h3>
+              <p>Tabelas, textos, imagens, JSONs, documentos e dados semiestruturados.</p>
+            </div>
+            <div class="card magenta">
+              <h3>Infraestrutura</h3>
+              <p>Armazenar, distribuir, processar e disponibilizar dados para análise.</p>
+            </div>
+          </div>
+          <div class="bigdata-visual">
+            <img src="../assets/img/bigdata.png" alt="Visual de Big Data com conexões e dados digitais">
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <section class="slide" id="s4d">
+      <div class="pad">
+        <span class="step-tag">Teoria</span>
+        <h1 class="title rule">Inteligência Artificial: sistemas que aprendem padrões</h1>
+        <p class="slide-thesis">IA é o guarda-chuva maior. Dentro dela, Machine Learning aprende com dados; dentro de ML, Deep Learning usa redes profundas; e LLMs são uma família importante dentro de Deep Learning.</p>
+        <div class="ai-hierarchy">
+          <svg viewBox="0 0 520 320" role="img" aria-label="Círculos concêntricos: IA contém Machine Learning, que contém Deep Learning, que contém LLMs">
+            <circle class="ring-ai" cx="260" cy="160" r="148"></circle>
+            <circle class="ring-ml" cx="260" cy="176" r="108"></circle>
+            <circle class="ring-dl" cx="260" cy="190" r="70"></circle>
+            <circle class="ring-llm" cx="260" cy="203" r="38"></circle>
+            <text class="label-ai" x="260" y="47">IA</text>
+            <text class="label-ml" x="260" y="110">Machine Learning</text>
+            <text class="label-dl" x="260" y="169">Deep Learning</text>
+            <text class="label-llm" x="260" y="209">LLMs</text>
+          </svg>
+          <div class="ai-legend">
+            <div class="card blue"><h3>IA</h3><p>Campo amplo de sistemas com comportamento inteligente em tarefas específicas.</p></div>
+            <div class="card green"><h3>Machine Learning</h3><p>Subárea da IA em que sistemas aprendem padrões a partir de dados.</p></div>
+            <div class="card magenta"><h3>Deep Learning</h3><p>Subárea de ML baseada em redes neurais profundas.</p></div>
+            <div class="card orange"><h3>LLMs</h3><p>Modelos de linguagem treinados para processar e gerar texto.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide company-slide" id="s4e">
+      <div class="pad">
+        <span class="step-tag">Teoria</span>
+        <h1 class="title rule">Como grandes empresas utilizam ML</h1>
+        <div class="company-grid">
+          <div class="card brand-netflix">
+            <div class="company-brand"><img class="company-logo tall" src="../assets/img/logos/netflix.png" alt="Netflix"></div>
+            <p>Analisa histórico de visualização, hábitos de uso e horários para recomendar conteúdos e personalizar miniaturas exibidas na tela.</p>
+          </div>
+          <div class="card brand-amazon">
+            <div class="company-brand"><img class="company-logo" src="../assets/img/logos/amazon.png" alt="Amazon"></div>
+            <p>Usa ML para prever demanda de estoque, ajustar preços dinâmicos e alimentar o sistema de recomendação de produtos.</p>
+          </div>
+          <div class="card brand-uber">
+            <div class="company-brand"><img class="company-logo" src="../assets/img/logos/uber.png" alt="Uber"></div>
+            <p>Aplica modelos preditivos para estimar chegada, definir preços por oferta e demanda e analisar dados de segurança das viagens.</p>
+          </div>
+          <div class="card brand-spotify">
+            <div class="company-brand"><img class="company-logo" src="../assets/img/logos/spotify.png" alt="Spotify"></div>
+            <p>Cria playlists personalizadas, como Discover Weekly, usando padrões de audição e filtragem colaborativa entre milhões de usuários.</p>
+          </div>
+          <div class="card brand-alphago wide">
+            <div class="company-brand"><img class="company-logo wide" src="../assets/img/logos/alphago.png" alt="AlphaGo (Google DeepMind)"></div>
+            <p>Marco histórico em que uma IA venceu o campeão mundial de Go usando aprendizado por reforço profundo e autojogo para aprender estratégias inéditas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" id="s5">
+      <div class="pad">
+        <span class="step-tag">Teoria</span>
+        <h1 class="title rule">Diferença entre algoritmo e modelo</h1>
+        <div class="two-col">
+          <div class="card orange">
+            <h3>Algoritmo</h3>
+            <p>É o procedimento matemático. Uma Árvore de Decisão sabe dividir dados por perguntas, mas ainda não conhece nenhum fenômeno real.</p>
+          </div>
+          <div class="card green">
+            <h3>Modelo</h3>
+            <p>É o resultado depois do treinamento. O algoritmo passa a carregar padrões aprendidos a partir de exemplos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="s6">
+      <div class="pad">
+        <span class="step-tag">Teoria</span>
+        <h1 class="title rule">Três jeitos de uma máquina aprender</h1>
+        <div class="three-col">
+          <div class="card magenta">
+            <h3>Supervisionado</h3>
+            <p>Tem resposta conhecida: cada exemplo vem acompanhado de um rótulo ou valor esperado.</p>
+          </div>
+          <div class="card blue">
+            <h3>Não supervisionado</h3>
+            <p>Não tem resposta certa. O algoritmo procura grupos parecidos.</p>
+          </div>
+          <div class="card orange">
+            <h3>Reforço</h3>
+            <p>Um agente aprende por tentativa, erro e recompensa.</p>
+          </div>
+        </div>
+        <table class="matrix">
+          <tr>
+            <th>Tipo</th>
+            <th>Pergunta</th>
+            <th>Exemplo conceitual</th>
+          </tr>
+          <tr>
+            <td class="t">Classificação</td>
+            <td>Qual categoria?</td>
+            <td>Aprovar ou reprovar, positivo ou negativo, classe A ou classe B.</td>
+          </tr>
+          <tr>
+            <td class="t">Clusterização</td>
+            <td>Quais grupos existem?</td>
+            <td>Grupos de clientes, produtos ou registros parecidos.</td>
+          </tr>
+          <tr>
+            <td class="t">Regressão</td>
+            <td>Qual valor numérico?</td>
+            <td>Preço, demanda, tempo ou qualquer valor contínuo.</td>
+          </tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide" id="s6a">
+      <div class="pad">
+        <span class="step-tag">Teoria</span>
+        <h1 class="title rule">Aprendizado supervisionado: quando já temos a resposta</h1>
+        <p class="slide-thesis">O modelo aprende a partir de exemplos em que a resposta correta já está marcada.</p>
+        <div class="two-col">
+          <div class="card magenta">
+            <h3>Classificação</h3>
+            <p>Usamos quando a resposta esperada é uma categoria.</p>
+            <p>A pergunta típica é: a qual classe este registro pertence?</p>
+          </div>
+          <div class="card green">
+            <h3>Regressão</h3>
+            <p>Usamos quando a resposta esperada é um valor numérico contínuo.</p>
+            <p>A pergunta típica é: qual valor devemos estimar?</p>
+          </div>
+        </div>
+        <div class="note ok">Nos próximos slides, veremos algoritmos que resolvem esses dois tipos de problema supervisionado.</div>
+      </div>
+    </section>
+
+    <section class="slide algo-slide" id="s6c">
+      <div class="pad">
+        <span class="step-tag">Classificação e regressão</span>
+        <h1 class="title rule">Árvore de Decisão</h1>
+        <p class="slide-thesis">Algoritmo supervisionado que aprende uma sequência de perguntas para separar exemplos e chegar a uma previsão.</p>
+        <div class="algo-layout">
+          <div class="algo-copy">
+            <div class="three-col">
+          <div class="card orange">
+            <h3>Como funciona</h3>
+            <p>Divide os dados em ramos. Cada divisão tenta separar melhor os exemplos de acordo com uma variável.</p>
+          </div>
+          <div class="card green">
+            <h3>Uso real</h3>
+            <p>Exemplo real: triagem de crédito. A árvore usa dados como renda, atrasos anteriores e uso do limite para apoiar aprovações ou revisões manuais.</p>
+          </div>
+          <div class="card blue">
+            <h3>Atenção</h3>
+            <p>Lida relativamente bem com outliers em variáveis numéricas, porque usa cortes. Ainda assim, árvores profundas podem memorizar exceções e ruído.</p>
+          </div>
+        </div>
+          </div>
+          <figure class="algo-visual">
+            <img src="../assets/img/algoritmos/arvore-decisao.png" alt="Ilustração de Árvore de Decisão">
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide algo-slide" id="s6d">
+      <div class="pad">
+        <span class="step-tag">Classificação</span>
+        <h1 class="title rule">Random Forest Classifier</h1>
+        <p class="slide-thesis">Modelo de classificação que combina várias árvores de decisão para produzir uma previsão mais estável.</p>
+        <div class="algo-layout">
+          <div class="algo-copy">
+            <div class="three-col">
+          <div class="card green">
+            <h3>Como funciona</h3>
+            <p>Treina muitas árvores com variações dos dados e das variáveis. A classe final vem por votação.</p>
+          </div>
+          <div class="card blue">
+            <h3>Uso real</h3>
+            <p>Exemplo real: detecção de fraude em cartão. Várias árvores votam se uma transação parece normal ou suspeita usando valor, horário, local e histórico.</p>
+          </div>
+          <div class="card magenta">
+            <h3>Atenção</h3>
+            <p>Costuma ser mais robusto a outliers e ruído que uma única árvore, mas perde transparência. Rótulos errados ainda podem atrapalhar.</p>
+          </div>
+        </div>
+          </div>
+          <figure class="algo-visual">
+            <img src="../assets/img/algoritmos/random-forest.png" alt="Ilustração de Random Forest Classifier">
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide algo-slide" id="s6e">
+      <div class="pad">
+        <span class="step-tag">Classificação e regressão</span>
+        <h1 class="title rule">KNN: K-Nearest Neighbors</h1>
+        <p class="slide-thesis">Algoritmo baseado em proximidade: a previsão vem dos exemplos mais parecidos com o novo caso.</p>
+        <div class="algo-layout">
+          <div class="algo-copy">
+            <div class="three-col">
+          <div class="card blue">
+            <h3>Como funciona</h3>
+            <p>Calcula distâncias entre registros. Os K vizinhos mais próximos influenciam a previsão.</p>
+          </div>
+          <div class="card orange">
+            <h3>Uso real</h3>
+            <p>Exemplo real: recomendação por similaridade. Um e-commerce sugere produtos olhando clientes ou itens parecidos com o caso atual.</p>
+          </div>
+          <div class="card green">
+            <h3>Atenção</h3>
+            <p>É sensível a escala, ruído e outliers, porque tudo depende de distância. Normalizar variáveis costuma ser essencial.</p>
+          </div>
+        </div>
+          </div>
+          <figure class="algo-visual">
+            <img src="../assets/img/algoritmos/knn.png" alt="Ilustração de KNN">
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide algo-slide" id="s6f">
+      <div class="pad">
+        <span class="step-tag">Classificação</span>
+        <h1 class="title rule">SVM: Support Vector Machine</h1>
+        <p class="slide-thesis">Algoritmo supervisionado que procura o hiperplano ótimo: a fronteira que separa classes com a maior margem possível.</p>
+        <div class="algo-layout">
+          <div class="algo-copy">
+            <div class="three-col">
+          <div class="card magenta">
+            <h3>Como funciona</h3>
+            <p>Encontra uma fronteira chamada hiperplano. O hiperplano ótimo maximiza a margem entre as classes usando os vetores de suporte.</p>
+          </div>
+          <div class="card green">
+            <h3>Uso real</h3>
+            <p>Exemplo real: classificação de documentos ou imagens simples, separando categorias com uma fronteira bem definida entre os exemplos.</p>
+          </div>
+          <div class="card orange">
+            <h3>Atenção</h3>
+            <p>É sensível à escala e a outliers próximos da fronteira. Normalização e ajuste de margem, kernel e C fazem diferença.</p>
+          </div>
+        </div>
+          </div>
+          <figure class="algo-visual">
+            <img src="../assets/img/algoritmos/svm.png" alt="Ilustração de SVM">
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide algo-slide" id="s6n">
+      <div class="pad">
+        <span class="step-tag">Classificação</span>
+        <h1 class="title rule">Regressão Logística</h1>
+        <p class="slide-thesis">Apesar do nome, é um algoritmo de classificação usado para estimar a probabilidade de uma classe.</p>
+                <div class="algo-layout">
+          <div class="algo-copy">
+            <div class="three-col">
+          <div class="card green">
+            <h3>Como funciona</h3>
+            <p>Calcula uma combinação das variáveis e transforma o resultado em probabilidade entre 0 e 1.</p>
+          </div>
+          <div class="card blue">
+            <h3>Uso real</h3>
+            <p>Exemplo real: previsão de churn. O modelo estima a probabilidade de um cliente cancelar o serviço no próximo mês.</p>
+          </div>
+          <div class="card orange">
+            <h3>Atenção</h3>
+            <p>É sensível a outliers e a variáveis muito correlacionadas. Normalização e revisão de extremos ajudam a tornar a leitura mais confiável.</p>
+          </div>
+        </div>
+          </div>
+          <figure class="algo-visual">
+            <img src="../assets/img/algoritmos/regressao-logistica.png" alt="Ilustração de Regressão Logística">
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide algo-slide" id="s6o">
+      <div class="pad">
+        <span class="step-tag">Classificação</span>
+        <h1 class="title rule">Naive Bayes</h1>
+        <p class="slide-thesis">Algoritmo probabilístico: "Naive" indica a suposição simplificadora de independência; "Bayes" vem do Teorema de Bayes.</p>
+        <div class="algo-layout">
+          <div class="algo-copy">
+            <div class="three-col">
+          <div class="card magenta">
+            <h3>Como funciona</h3>
+            <p>Calcula a probabilidade de cada classe a partir das evidências observadas, combinando probabilidades condicionais.</p>
+          </div>
+          <div class="card green">
+            <h3>Uso real</h3>
+            <p>Exemplo real: filtro de spam. O modelo usa palavras do e-mail para estimar se a mensagem é spam ou legítima.</p>
+          </div>
+          <div class="card blue">
+            <h3>Atenção</h3>
+            <p>A suposição de independência raramente é perfeita. Em texto é robusto; em versões gaussianas, outliers numéricos podem distorcer probabilidades.</p>
+          </div>
+        </div>
+          </div>
+          <figure class="algo-visual">
+            <img src="../assets/img/algoritmos/naive-bayes.png" alt="Ilustração de Naive Bayes">
+          </figure>
+        </div>
+      </div>
+    </section>
+    <section class="slide algo-slide" id="s6g">
+      <div class="pad">
+        <span class="step-tag">Regressão</span>
+        <h1 class="title rule">Regressão Linear</h1>
+        <p class="slide-thesis">Modelo supervisionado usado para prever valores numéricos a partir de uma combinação linear das variáveis.</p>
+        <div class="algo-layout">
+          <div class="algo-copy">
+            <div class="three-col">
+          <div class="card orange">
+            <h3>Como funciona</h3>
+            <p>Ajusta uma linha ou plano que reduz o erro entre valores previstos e valores observados.</p>
+          </div>
+          <div class="card blue">
+            <h3>Uso real</h3>
+            <p>Exemplo real: estimar preço de imóvel usando metragem, localização, quartos e idade do imóvel quando a relação é aproximadamente linear.</p>
+          </div>
+          <div class="card green">
+            <h3>Atenção</h3>
+            <p>Tem dificuldade com relações muito não lineares e é bastante sensível a outliers, porque pontos extremos podem puxar a reta.</p>
+          </div>
+        </div>
+          </div>
+          <figure class="algo-visual">
+            <img src="../assets/img/algoritmos/regressao-linear.png" alt="Ilustração de Regressão Linear">
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide algo-slide" id="s6h">
+      <div class="pad">
+        <span class="step-tag">Regressão</span>
+        <h1 class="title rule">Random Forest Regressor</h1>
+        <p class="slide-thesis">Modelo de regressão que combina várias árvores para prever valores numéricos com mais estabilidade.</p>
+        <div class="algo-layout">
+          <div class="algo-copy">
+            <div class="three-col">
+          <div class="card green">
+            <h3>Como funciona</h3>
+            <p>Cada árvore estima um valor. A previsão final costuma ser a média das previsões das árvores.</p>
+          </div>
+          <div class="card magenta">
+            <h3>Uso real</h3>
+            <p>Exemplo real: previsão de demanda. Redes varejistas estimam vendas por loja considerando preço, calendário, estoque e histórico.</p>
+          </div>
+          <div class="card blue">
+            <h3>Atenção</h3>
+            <p>É mais robusto que regressão linear para relações não lineares, mas valores extremos no alvo ainda podem influenciar a média das árvores.</p>
+          </div>
+        </div>
+          </div>
+          <figure class="algo-visual">
+            <img src="../assets/img/algoritmos/random-forest.png" alt="Ilustração de Random Forest Regressor">
+          </figure>
+        </div>
+      </div>
+    </section>
+    <section class="slide algo-slide" id="s6p">
+      <div class="pad">
+        <span class="step-tag">Classificação e regressão</span>
+        <h1 class="title rule">XGBoost</h1>
+        <p class="slide-thesis">XGBoost significa eXtreme Gradient Boosting: um conjunto de árvores treinadas em sequência para corrigir erros e ganhar performance em dados tabulares.</p>
+        <div class="three-col">
+          <div class="card orange">
+            <h3>Como funciona</h3>
+            <p>Constrói árvores pequenas em sequência. Cada nova árvore tenta corrigir os erros residuais do conjunto anterior.</p>
+          </div>
+          <div class="card green">
+            <h3>Uso real</h3>
+            <p>Exemplo real: score de risco. Bancos e fintechs usam XGBoost em dados tabulares para estimar inadimplência, fraude ou propensão de compra.</p>
+          </div>
+          <div class="card magenta">
+            <h3>Atenção</h3>
+            <p>É poderoso, mas pode sobreajustar. Ruído e outliers podem pesar; por isso usamos regularização, <code>learning_rate</code>, profundidade e amostragem.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="slide" id="s6b">
+      <div class="pad">
+        <span class="step-tag">Teoria</span>
+        <h1 class="title rule">Quando não temos resposta pronta: grupos, anomalias e recompensa</h1>
+        <div class="three-col">
+          <div class="card blue">
+            <h3>Clusterização</h3>
+            <p>Agrupa exemplos parecidos sem receber uma resposta correta.</p>
+          </div>
+          <div class="card orange">
+            <h3>Detecção de anomalias</h3>
+            <p>Procura comportamentos fora do padrão. Exemplo: Isolation Forest.</p>
+          </div>
+          <div class="card magenta">
+            <h3>Reforço</h3>
+            <p>Um agente aprende por tentativa, erro e recompensa, ajustando decisões ao longo do tempo.</p>
+          </div>
+        </div>
+        <table class="matrix">
+          <tr><th>Paradigma</th><th>Resposta conhecida?</th><th>Uso típico</th></tr>
+          <tr><td class="t">Supervisionado</td><td>Sim</td><td>Prever categorias, riscos, eventos ou valores.</td></tr>
+          <tr><td class="t">Não supervisionado</td><td>Não</td><td>Segmentar registros ou detectar padrões incomuns.</td></tr>
+          <tr><td class="t">Reforço</td><td>Recompensa</td><td>Aprender uma sequência de decisões.</td></tr>
+        </table>
+      </div>
+    </section>
+
+
+    <section class="slide algo-slide" id="s6j">
+      <div class="pad">
+        <span class="step-tag">Clusterização</span>
+        <h1 class="title rule">Clusterização Hierárquica</h1>
+        <p class="slide-thesis">Técnica que organiza registros em uma hierarquia de grupos, do mais específico ao mais geral.</p>
+        <div class="three-col">
+          <div class="card green">
+            <h3>Como funciona</h3>
+            <p>Vai juntando registros ou grupos parecidos até formar uma estrutura em árvore chamada dendrograma.</p>
+          </div>
+          <div class="card magenta">
+            <h3>Uso real</h3>
+            <p>Exemplo real: segmentação de clientes. A empresa observa grandes grupos de comportamento e depois subgrupos, como frequentes, ocasionais e sensíveis a preço.</p>
+          </div>
+          <div class="card blue">
+            <h3>Atenção</h3>
+            <p>Pode ficar pesada em bases grandes. É sensível a outliers, que podem virar grupos isolados, e à métrica de distância escolhida.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide algo-slide" id="s6k">
+      <div class="pad">
+        <span class="step-tag">Clusterização</span>
+        <h1 class="title rule">DBSCAN</h1>
+        <p class="slide-thesis">Algoritmo de clusterização baseado em densidade: grupos aparecem onde há muitos pontos próximos.</p>
+        <div class="algo-layout">
+          <div class="algo-copy">
+            <div class="three-col">
+          <div class="card orange">
+            <h3>Como funciona</h3>
+            <p>Procura regiões densas e separa pontos isolados como ruído ou possíveis exceções.</p>
+          </div>
+          <div class="card blue">
+            <h3>Uso real</h3>
+            <p>Exemplo real: geolocalização. Agrupa corridas, entregas ou ocorrências por densidade no mapa e separa pontos isolados como ruído.</p>
+          </div>
+          <div class="card green">
+            <h3>Atenção</h3>
+            <p>Lida bem com outliers ao marcá-los como ruído, mas depende de distância e densidade. Sofre quando as densidades variam muito.</p>
+          </div>
+        </div>
+          </div>
+          <figure class="algo-visual">
+            <img src="../assets/img/algoritmos/dbscan.png" alt="Ilustração de DBSCAN">
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide algo-slide" id="s6l">
+      <div class="pad">
+        <span class="step-tag">Redução de dimensionalidade</span>
+        <h1 class="title rule">PCA: Análise de Componentes Principais</h1>
+        <p class="slide-thesis">Técnica de redução de dimensionalidade que resume muitas variáveis em poucos componentes informativos.</p>
+        <div class="three-col">
+          <div class="card magenta">
+            <h3>Como funciona</h3>
+            <p>Cria novas variáveis que concentram a maior parte da variação presente nos dados originais.</p>
+          </div>
+          <div class="card green">
+            <h3>Uso real</h3>
+            <p>Exemplo real: visualizar clientes descritos por muitas variáveis. O PCA reduz dezenas de colunas para dois componentes e facilita enxergar padrões.</p>
+          </div>
+          <div class="card orange">
+            <h3>Atenção</h3>
+            <p>É sensível à escala e a outliers. Padronização e revisão de extremos são importantes antes de interpretar componentes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide algo-slide" id="s6m">
+      <div class="pad">
+        <span class="step-tag">Anomalias</span>
+        <h1 class="title rule">Isolation Forest</h1>
+        <p class="slide-thesis">Algoritmo usado para detectar anomalias, procurando registros que se separam facilmente do restante.</p>
+        <div class="algo-layout">
+          <div class="algo-copy">
+            <div class="three-col">
+          <div class="card green">
+            <h3>Como funciona</h3>
+            <p>Cria várias árvores aleatórias. Pontos isolados tendem a ser separados com poucas divisões.</p>
+          </div>
+          <div class="card blue">
+            <h3>Uso real</h3>
+            <p>Exemplo real: monitoramento industrial. Sensores com leituras muito diferentes do padrão podem indicar falha de máquina ou manutenção urgente.</p>
+          </div>
+          <div class="card magenta">
+            <h3>Atenção</h3>
+            <p>Foi feito para encontrar outliers/anomalias, mas detecta diferença, não prova problema. Toda anomalia precisa de contexto.</p>
+          </div>
+        </div>
+          </div>
+          <figure class="algo-visual">
+            <img src="../assets/img/algoritmos/isolation-forest.png" alt="Ilustração de Isolation Forest">
+          </figure>
+        </div>
+      </div>
+    </section>
+    <section class="slide algo-slide" id="s6q">
+      <div class="pad">
+        <span class="step-tag">Regras de associação</span>
+        <h1 class="title rule">Apriori</h1>
+        <p class="slide-thesis">Algoritmo usado para descobrir associações frequentes entre itens ou eventos que aparecem juntos.</p>
+        <div class="algo-layout">
+          <div class="algo-copy">
+            <div class="three-col">
+          <div class="card orange">
+            <h3>Como funciona</h3>
+            <p>Procura combinações frequentes e transforma essas combinações em regras do tipo “se A, então B”.</p>
+          </div>
+          <div class="card green">
+            <h3>Uso real</h3>
+            <p>Exemplo real: cesta de supermercado. Descobrir que quem compra pão e queijo também tende a comprar café ajuda em promoções e layout.</p>
+          </div>
+          <div class="card blue">
+            <h3>Atenção</h3>
+            <p>Não lida com outliers numéricos; trabalha com frequência. Itens raros podem sumir se o suporte mínimo for alto demais.</p>
+          </div>
+        </div>
+          </div>
+          <figure class="algo-visual">
+            <img src="../assets/img/algoritmos/apriori.png" alt="Ilustração de Apriori">
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="s9">
+      <div class="pad">
+        <span class="step-tag">Dataset</span>
+        <h1 class="title rule">Conhecendo o dataset: Online Shoppers Intention</h1>
+        <p class="slide-thesis">Cada linha representa uma sessão de navegação em um e-commerce. As colunas descrevem o que a pessoa acessou, por quanto tempo, em qual contexto e se a visita terminou em compra.</p>
+        <div class="stat-grid">
+          <div class="stat">
+            <h3>12.330</h3>
+            <p>sessões de navegação registradas.</p>
+          </div>
+          <div class="stat">
+            <h3>17 + 1</h3>
+            <p>variáveis de entrada e um alvo: <code>Revenue</code>.</p>
+          </div>
+          <div class="stat">
+            <h3>15%</h3>
+            <p>das sessões terminaram em compra.</p>
+          </div>
+        </div>
+        <div class="note ok">A base é boa para uma aula introdutória porque conecta comportamento digital com uma decisão concreta: estimar intenção de compra.</div>
+        <p class="mini">Fonte: Kaggle / UCI Machine Learning Repository, dataset Online Shoppers Intention.</p>
+      </div>
+    </section>
+
+    <section class="slide" id="s9a">
+      <div class="pad">
+        <span class="step-tag">Dataset</span>
+        <h1 class="title rule">Colunas 1/3: navegação no site</h1>
+        <p class="slide-thesis">Essas colunas mostram quais tipos de página foram acessados e quanto tempo o visitante passou em cada grupo.</p>
+        <table class="matrix dataset-dict">
+          <tr>
+            <th>Coluna</th>
+            <th>Significado</th>
+          </tr>
+          <tr>
+            <td class="t"><code>Administrative</code></td>
+            <td>Quantidade de páginas administrativas visitadas na sessão.</td>
+          </tr>
+          <tr>
+            <td class="t"><code>Administrative_Duration</code></td>
+            <td>Tempo gasto em páginas administrativas, como conta, cadastro ou políticas do site.</td>
+          </tr>
+          <tr>
+            <td class="t"><code>Informational</code></td>
+            <td>Quantidade de páginas informativas acessadas.</td>
+          </tr>
+          <tr>
+            <td class="t"><code>Informational_Duration</code></td>
+            <td>Tempo gasto em páginas informativas, como ajuda, conteúdo institucional ou detalhes gerais.</td>
+          </tr>
+          <tr>
+            <td class="t"><code>ProductRelated</code></td>
+            <td>Quantidade de páginas relacionadas a produtos visitadas.</td>
+          </tr>
+          <tr>
+            <td class="t"><code>ProductRelated_Duration</code></td>
+            <td>Tempo gasto nas páginas de produtos durante a sessão.</td>
+          </tr>
+        </table>
+        <div class="note ok">Leitura didática: essas variáveis ajudam a perceber intensidade e foco da navegação.</div>
+      </div>
+    </section>
+
+    <section class="slide" id="s9b">
+      <div class="pad">
+        <span class="step-tag">Dataset</span>
+        <h1 class="title rule">Colunas 2/3: sinais de comportamento</h1>
+        <p class="slide-thesis">Essas métricas resumem qualidade da navegação, valor gerado pelas páginas e contexto de datas especiais.</p>
+        <table class="matrix dataset-dict">
+          <tr>
+            <th>Coluna</th>
+            <th>Significado</th>
+          </tr>
+          <tr>
+            <td class="t"><code>BounceRates</code></td>
+            <td>Percentual de visitantes que entram por uma página e saem sem realizar outra ação.</td>
+          </tr>
+          <tr>
+            <td class="t"><code>ExitRates</code></td>
+            <td>Percentual de visualizações que terminam naquela página específica.</td>
+          </tr>
+          <tr>
+            <td class="t"><code>PageValues</code></td>
+            <td>Valor médio associado às páginas visitadas antes da conclusão de uma transação.</td>
+          </tr>
+          <tr>
+            <td class="t"><code>SpecialDay</code></td>
+            <td>Proximidade da sessão com datas especiais ou feriados que podem aumentar compras.</td>
+          </tr>
+        </table>
+        <div class="note warn">Exemplo de interpretação: rejeição e saída altas podem indicar pouco engajamento; <code>PageValues</code> alto costuma sugerir maior intenção de compra.</div>
+      </div>
+    </section>
+
+    <section class="slide" id="s9c">
+      <div class="pad">
+        <span class="step-tag">Dataset</span>
+        <h1 class="title rule">Colunas 3/3: contexto, tecnologia e alvo</h1>
+        <p class="slide-thesis">Essas colunas situam a sessão no tempo, no perfil do visitante, na origem do tráfego e definem a resposta que o modelo aprende.</p>
+        <table class="matrix dataset-dict">
+          <tr>
+            <th>Coluna</th>
+            <th>Significado</th>
+          </tr>
+          <tr>
+            <td class="t"><code>Month</code></td>
+            <td>Mês em que a sessão ocorreu.</td>
+          </tr>
+          <tr>
+            <td class="t"><code>OperatingSystems</code></td>
+            <td>Sistema operacional usado pelo visitante, representado por um número.</td>
+          </tr>
+          <tr>
+            <td class="t"><code>Browser</code></td>
+            <td>Navegador usado pelo visitante, representado por um número.</td>
+          </tr>
+          <tr>
+            <td class="t"><code>Region</code></td>
+            <td>Região do visitante, representada por um número.</td>
+          </tr>
+          <tr>
+            <td class="t"><code>TrafficType</code></td>
+            <td>Tipo ou origem do tráfego que levou o visitante ao site.</td>
+          </tr>
+          <tr>
+            <td class="t"><code>VisitorType</code></td>
+            <td>Perfil do visitante: novo, recorrente ou outro.</td>
+          </tr>
+          <tr>
+            <td class="t"><code>Weekend</code></td>
+            <td>Indica se a sessão aconteceu em um fim de semana.</td>
+          </tr>
+          <tr>
+            <td class="t"><code>Revenue</code></td>
+            <td>Indica se houve compra: <code>True</code> para compra e <code>False</code> para não compra.</td>
+          </tr>
+        </table>
+      </div>
+    </section>
+    <section class="slide guiding-question" id="s4">
+      <div class="pad">
+        <h1>Como podemos prever se uma sessão de e-commerce terminará em compra?</h1>
+      </div>
+    </section>
+
+    <section class="slide colab-open" id="s8">
+      <div class="pad">
+        <img src="../assets/img/colab.png" alt="Google Colab">
+        <h1>Abram o Google Colab para começarmos o notebook.</h1>
+      </div>
+    </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <section class="slide no-num closing" id="s26">
+      <div class="closing-bars" aria-hidden="true">
+        <span style="height: 72px"></span>
+        <span style="height: 118px"></span>
+        <span style="height: 92px"></span>
+        <span style="height: 152px"></span>
+        <span style="height: 108px"></span>
+        <span style="height: 138px"></span>
+        <span style="height: 166px"></span>
+      </div>
+      <svg class="closing-chart" viewBox="0 0 430 260" aria-hidden="true">
+        <path class="axis" d="M28 222 H398 M28 222 V34" />
+        <path class="series-b" d="M44 198 C92 126, 132 156, 176 96 S276 120, 322 58 S374 92, 398 42" />
+        <path class="series-a" d="M44 184 C96 164, 126 178, 170 128 S260 96, 306 82 S360 42, 398 70" />
+        <rect x="38" y="178" width="13" height="13" rx="2" />
+        <rect x="164" y="122" width="13" height="13" rx="2" />
+        <rect x="300" y="76" width="13" height="13" rx="2" />
+        <rect x="392" y="64" width="13" height="13" rx="2" />
+      </svg>
+      <h1 class="thanks">obrigado</h1>
+    </section>
+  </main>
+
+  <script>
+    var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+    var current = 0, count = document.getElementById('slideCount'), toc = document.getElementById('toc'), deck = document.querySelector('.deck'), soloBtn = document.getElementById('soloBtn'), scrollTicking = false;
+    function isSolo() { return document.body.classList.contains('solo') }
+    function updateScale() { var w = window.innerWidth, h = window.innerHeight; if (!w || !h) return; deck.style.setProperty('--scale', Math.min(1, Math.max(.1, (w - 40) / 1280))); document.documentElement.style.setProperty('--solo-scale-x', Math.max(.1, w / 1280)); document.documentElement.style.setProperty('--solo-scale-y', Math.max(.1, h / 720)) }
+    function setCurrent(index, updateHash, scrollToSlide) { current = Math.max(0, Math.min(slides.length - 1, index)); slides.forEach(function (slide, i) { slide.classList.toggle('active', i === current) }); count.textContent = (current + 1) + ' / ' + slides.length; if (updateHash) { try { history.replaceState(null, '', '#' + slides[current].id) } catch (e) { } } if (scrollToSlide && !isSolo()) slides[current].scrollIntoView({ behavior: 'smooth', block: 'start' }) }
+    function syncFromScroll() { if (isSolo()) return; var best = 0, bestDistance = Infinity; slides.forEach(function (slide, i) { var distance = Math.abs(slide.getBoundingClientRect().top - 40); if (distance < bestDistance) { best = i; bestDistance = distance } }); setCurrent(best, false, false) }
+    function setSolo(enabled) { document.body.classList.toggle('solo', enabled); soloBtn.textContent = enabled ? 'Sair' : 'Apresentar'; updateScale(); setCurrent(current, true, !enabled) }
+    function fromHash() { var id = window.location.hash.replace('#', ''), idx = slides.findIndex(function (slide) { return slide.id === id }); setCurrent(idx >= 0 ? idx : 0, false) }
+    document.getElementById('prevBtn').addEventListener('click', function () { setCurrent(current - 1, true, true) });
+    document.getElementById('nextBtn').addEventListener('click', function () { setCurrent(current + 1, true, true) });
+    soloBtn.addEventListener('click', function () { setSolo(!isSolo()) });
+    document.getElementById('tocBtn').addEventListener('click', function () { document.body.classList.toggle('show-toc') });
+    toc.addEventListener('click', function (event) { var link = event.target.closest('a'); if (!link) return; var id = link.getAttribute('href').replace('#', ''), idx = slides.findIndex(function (slide) { return slide.id === id }); if (idx >= 0) setCurrent(idx, true, true); document.body.classList.remove('show-toc') });
+    document.addEventListener('keydown', function (event) { if (document.body.classList.contains('lightbox-open')) return; if (event.ctrlKey || event.metaKey || event.altKey) return; if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { event.preventDefault(); setCurrent(current + 1, true, true) } if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); setCurrent(current - 1, true, true) } if (event.key === 'Home') setCurrent(0, true, true); if (event.key === 'End') setCurrent(slides.length - 1, true, true); if (event.key.toLowerCase() === 'f') setSolo(!isSolo()); if (event.key === 'Escape') { document.body.classList.remove('show-toc'); setSolo(false) } });
+    function initAlgorithmLightbox() {
+      var overlay = document.createElement('div');
+      var expandedImage = document.createElement('img');
+      var closeButton = document.createElement('button');
+      overlay.className = 'image-lightbox';
+      overlay.setAttribute('role', 'dialog');
+      overlay.setAttribute('aria-modal', 'true');
+      overlay.setAttribute('aria-label', 'Imagem ampliada do algoritmo');
+      closeButton.type = 'button';
+      closeButton.innerHTML = '&times;';
+      closeButton.setAttribute('aria-label', 'Fechar imagem ampliada');
+      closeButton.setAttribute('title', 'Fechar');
+      overlay.appendChild(expandedImage);
+      overlay.appendChild(closeButton);
+      document.body.appendChild(overlay);
+      function openImage(image) {
+        expandedImage.src = image.currentSrc || image.src;
+        expandedImage.alt = image.alt || '';
+        overlay.classList.add('open');
+        document.body.classList.add('lightbox-open');
+        closeButton.focus();
+      }
+      function closeImage() {
+        overlay.classList.remove('open');
+        document.body.classList.remove('lightbox-open');
+        expandedImage.removeAttribute('src');
+        expandedImage.alt = '';
+      }
+      document.querySelectorAll('.algo-slide .algo-visual img').forEach(function (image) {
+        image.setAttribute('tabindex', '0');
+        image.setAttribute('role', 'button');
+        image.setAttribute('aria-label', (image.alt || 'Imagem do algoritmo') + ' - ampliar');
+        image.addEventListener('click', function () { openImage(image) });
+        image.addEventListener('keydown', function (event) { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openImage(image) } });
+      });
+      closeButton.addEventListener('click', closeImage);
+      overlay.addEventListener('click', function (event) { if (event.target === overlay) closeImage() });
+      document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && overlay.classList.contains('open')) closeImage() });
+    }
+    function escapeHtml(text) { return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
+    function wrap(cls, text) { return '<span class="' + cls + '">' + text + '</span>' }
+    var pyKw = 'import|from|as|for|in|if|else|elif|return|True|False|None|print|class|def|with|and|or|not';
+    var pyReg = new RegExp('(^[ \\t]*(?:#).*$)' + '|(' + '\"(?:[^\"\\\\]|\\\\.)*\"' + '|' + '\'(?:[^\'\\\\]|\\\\.)*\'' + ')' + '|\\b(' + pyKw + ')\\b', 'gm');
+    function highlightPython(text) { return escapeHtml(text).replace(pyReg, function (all, cmt, str, kw) { if (cmt) return wrap('cmt', cmt); if (str) return wrap('str', str); return wrap('kw', kw) }) }
+    function highlight(block) { var raw = block.textContent; if (block.classList.contains('plain')) return escapeHtml(raw); return highlightPython(raw) }
+    function copyCode(button) { var block = button.closest('.code-wrap').querySelector('.code-block'); navigator.clipboard.writeText(block.dataset.raw || block.textContent).then(function () { var old = button.textContent; button.textContent = 'COPIADO'; setTimeout(function () { button.textContent = old }, 1200) }) }
+    document.querySelectorAll('.code-block').forEach(function (block) { block.dataset.raw = block.textContent; block.innerHTML = highlight(block) });
+    document.querySelectorAll('.code-bar button').forEach(function (button) { button.addEventListener('click', function () { copyCode(button) }) });
+    initAlgorithmLightbox();
+    window.addEventListener('hashchange', fromHash); window.addEventListener('resize', updateScale); document.addEventListener('visibilitychange', updateScale); window.addEventListener('pageshow', updateScale); window.addEventListener('focus', updateScale); window.addEventListener('scroll', function () { if (scrollTicking) return; scrollTicking = true; window.requestAnimationFrame(function () { syncFromScroll(); scrollTicking = false }) }, { passive: true }); updateScale(); fromHash();
+  </script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
